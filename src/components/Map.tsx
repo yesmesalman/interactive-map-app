@@ -1,35 +1,49 @@
-import React from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import React, { useEffect, useRef } from 'react';
+import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import L, { LatLngExpression } from 'leaflet';
-import icon from 'leaflet/dist/images/marker-icon.png';
-import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+import 'leaflet-draw/dist/leaflet.draw.css';
+import L from 'leaflet';
+import 'leaflet-draw';
 
-const DEFAULT_LAT_LNG: LatLngExpression = [24.8736, 67.0351];
+const MapWithDrawControl: React.FC = () => {
+  const map = useMap();
+  const drawnItems = useRef<L.FeatureGroup>(L.featureGroup()).current;
 
-const DefaultIcon = L.icon({
-  iconUrl: icon,
-  shadowUrl: iconShadow,
-});
+  useEffect(() => {
+    if (map) {
+      map.addLayer(drawnItems);
 
-L.Marker.prototype.options.icon = DefaultIcon;
+      const drawControl = new L.Control.Draw({
+        edit: {
+          featureGroup: drawnItems,
+        },
+      });
+      map.addControl(drawControl);
 
-const Map: React.FC = () => {
+      map.on(L.Draw.Event.CREATED, (event: L.LeafletEvent) => {
+        const layer = (event as L.DrawEvents.Created).layer;
+        drawnItems.addLayer(layer);
+      });
+    }
+  }, [map, drawnItems]);
+
+  return null;
+};
+
+const MapComponent: React.FC = () => {
   return (
-    <MapContainer center={DEFAULT_LAT_LNG} zoom={13} style={{ height: '100vh', width: '100%' }}>
+    <MapContainer
+      center={[51.505, -0.09]} // Default center
+      zoom={13}
+      style={{ height: "100vh", width: "100%" }}
+    >
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       />
-      <Marker position={DEFAULT_LAT_LNG}>
-        <Popup>
-          A pretty CSS3 popup. <br /> Easily customizable.
-        </Popup>
-      </Marker>
+      <MapWithDrawControl />
     </MapContainer>
   );
 };
 
-Map.propTypes = {}
-
-export default Map;
+export default MapComponent;
