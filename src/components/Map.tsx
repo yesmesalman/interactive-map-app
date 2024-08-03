@@ -1,31 +1,31 @@
-import React, { useEffect, useRef } from 'react';
-import { MapContainer, TileLayer, useMap } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-import 'leaflet-draw/dist/leaflet.draw.css';
-import L from 'leaflet';
-import 'leaflet-draw';
+import React, { useEffect, useRef } from "react";
+import { MapContainer, TileLayer, useMap } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import "leaflet-draw/dist/leaflet.draw.css";
+import L from "leaflet";
+import "leaflet-draw";
 
 const MapWithDrawControl: React.FC = () => {
   const map = useMap();
   const drawnItems = useRef<L.FeatureGroup>(L.featureGroup()).current;
 
   useEffect(() => {
-    if (map) {
-      map.addLayer(drawnItems);
 
-      const drawControl = new L.Control.Draw({
-        edit: {
-          featureGroup: drawnItems,
-        },
-      });
-      map.addControl(drawControl);
+    const existingControls = document.querySelector('.leaflet-draw.leaflet-control');
+    if (existingControls) return;
 
-      map.on(L.Draw.Event.CREATED, (event: L.LeafletEvent) => {
-        const layer = (event as L.DrawEvents.Created).layer;
-        drawnItems.addLayer(layer);
-      });
-    }
-  }, [map, drawnItems]);
+    const drawControl = new L.Control.Draw({
+      edit: {
+        featureGroup: drawnItems,
+      },
+    });
+    map.addControl(drawControl);
+
+    map.on(L.Draw.Event.CREATED, (event: L.LeafletEvent) => {
+      const layer = (event as L.DrawEvents.Created).layer;
+      drawnItems.addLayer(layer);
+    });
+  }, []);
 
   return null;
 };
