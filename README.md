@@ -1,46 +1,69 @@
-# Getting Started with Create React App
+# Interactive Map Application with Polygon Drawing and Editing
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Introduction
 
-## Available Scripts
+This project is an interactive web application that allows users to draw and manipulate polygons on a map. Developed using React and TypeScript, the application leverages the Leaflet library for map interactions and Open Street Map as the tile provider. Storybook is used to demonstrate and test various UI components.
 
-In the project directory, you can run:
+## Objective
 
-### `npm start`
+The primary goal is to create a functional application where users can:
+- Draw polygons on a map
+- Edit these polygons
+- Ensure that no two polygons intersect
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Features
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+1. **Map Integration**
+   - **Leaflet Map Setup:** Displays a Leaflet map centered on a default location using Open Street Map tiles.
+   - **Map Component:** A responsive React component that handles map interactions.
 
-### `npm test`
+2. **Polygon Drawing**
+   - **User Interaction:** Draw polygons by clicking to create vertices, with real-time feedback showing the forming shape.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+3. **Polygon Editing**
+   - **Vertex Manipulation:** Drag vertices to modify the polygon, add new vertices by clicking on an edge, and remove vertices as needed.
+   - **Editing Feedback:** Visual indicators show when a polygon is in edit mode.
 
-### `npm run build`
+4. **Intersection Detection**
+   - **Validation:** Ensure polygons do not intersect. If an intersection is detected, provide clear visual feedback, such as changing the polygon’s color.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+5. **Storybook Integration**
+   - **Setup:** Demonstrates and tests various component states and functionalities.
+   - **Scenarios:** Includes stories for initial map view, drawing a new polygon, editing an existing polygon, and handling intersections.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+6. **TypeScript**
+   - **Type Safety:** Ensures type safety throughout the application using appropriate types and interfaces.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Installation
 
-### `npm run eject`
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yesmesalman/interactive-map-app.git
+   cd interactive-map-app
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+2. Install dependencies:
+   ```bash
+   npm install
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Running the Application
+1.  Start the development server:
+``` 
+npm start 
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+Open http://localhost:3000 in your browser to view the application.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+2.  To run Storybook:
+```
+npm run storybook
+```
 
-## Learn More
+Open http://localhost:6006 in your browser to view the Storybook interface.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Usage
+- Drawing Polygons: Click on the map to create vertices and form polygons. Click on the starting vertex to close the polygon.
+- Editing Polygons: Drag vertices to move them, click on edges to add new vertices, and press Delete on selected vertices to remove them.
+- Intersection Handling: If a polygon intersects with another, it will be highlighted in red.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Links
+- ChatGPT: https://chatgpt.com/share/20a33520-4ad5-489f-b557-26f6e1f9096d
