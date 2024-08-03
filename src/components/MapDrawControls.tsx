@@ -1,19 +1,37 @@
-import React, { useEffect, useRef } from 'react';
-import { useMap } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-import 'leaflet-draw/dist/leaflet.draw.css';
-import L from 'leaflet';
-import 'leaflet-draw';
+import React, { useEffect, useRef } from "react";
+import { useMap } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import "leaflet-draw/dist/leaflet.draw.css";
+import L from "leaflet";
+import "leaflet-draw";
+import { checkForIntersections } from "../helpers/map/helpers";
 
-const MapWithDrawControl: React.FC = () => {
+type MapWithDrawControlProps = {
+  defaultPolygon?: L.LatLngExpression[][];
+};
+
+const MapWithDrawControl: React.FC = (props: MapWithDrawControlProps) => {
+  const { defaultPolygon } = props;
   const map = useMap();
   const drawnItems = useRef<L.FeatureGroup>(L.featureGroup()).current;
 
   useEffect(() => {
     if (!map) return;
 
+    // Initialize the default polygons if exists
+    if (defaultPolygon) {
+      defaultPolygon.map((p) => {
+        return drawnItems.addLayer(L.polygon(p));
+      });
+      setTimeout(() => {
+        checkForIntersections(map);
+      }, 500);
+    }
+
     // Check if draw control already exists
-    const existingControls = document.querySelector('.leaflet-draw.leaflet-control');
+    const existingControls = document.querySelector(
+      ".leaflet-draw.leaflet-control"
+    );
     if (existingControls) return;
 
     const drawControl = new L.Control.Draw({
@@ -21,55 +39,50 @@ const MapWithDrawControl: React.FC = () => {
         polyline: false,
         rectangle: false,
         circle: false,
-        marker: false
+        marker: false,
       },
       edit: {
-        featureGroup: drawnItems, // Features that can be edited
-        remove: true
-      }
+        featureGroup: drawnItems,
+        remove: true,
+      },
     });
 
     map.addControl(drawControl);
     map.addLayer(drawnItems);
 
     // Handle the creation of new polygons
+    // Handle Polygon intersections
     map.on(L.Draw.Event.CREATED, (event: L.LeafletEvent) => {
       const layer = (event as L.DrawEvents.Created).layer;
       drawnItems.addLayer(layer);
+      checkForIntersections(map);
     });
 
     // Handle feedback while editing
     map.on(L.Draw.Event.EDITSTART, (event: L.LeafletEvent) => {
       map.eachLayer((layer) => {
         if (layer instanceof L.Polygon) {
-          layer.setStyle({ fillColor: 'red', weight: 2, dashArray: '5, 5' }); // Visual indication for edit mode
+          layer.setStyle({ fillColor: "red", weight: 2, dashArray: "5, 5" }); // Visual indication for edit mode
         }
       });
     });
 
     map.on(L.Draw.Event.EDITMOVE, (event: L.LeafletEvent) => {
-      console.log('Vertex moved:', event);
       const layers = (event as L.DrawEvents.Edited).layers;
       layers?.eachLayer((layer) => {
         if (layer instanceof L.Polygon) {
-          // This event is more for feedback after the move
-          layer.setStyle({ fillColor: 'red', weight: 2, dashArray: '5, 5' }); // Maintain visual indication
+          layer.setStyle({ fillColor: "red", weight: 2, dashArray: "5, 5" }); // Maintain visual indication
         }
       });
     });
 
     map.on(L.Draw.Event.EDITSTOP, (event: L.LeafletEvent) => {
-      console.log('Editing stopped:', event);
       const layers = (event as L.DrawEvents.Edited).layers;
       layers?.eachLayer((layer) => {
         if (layer instanceof L.Polygon) {
-          layer.setStyle({ color: 'red', weight: 2 }); // Revert to default style after editing
+          layer.setStyle({ color: "red", weight: 2 }); // Revert to default style after editing
         }
       });
-    });
-
-    map.on(L.Draw.Event.DRAWSTOP, () => {
-      console.log('Drawing stopped');
     });
 
     // Cleanup function to remove the control and event listeners
@@ -81,7 +94,7 @@ const MapWithDrawControl: React.FC = () => {
       map.off(L.Draw.Event.EDITSTOP);
       map.off(L.Draw.Event.DRAWSTOP);
     };
-  }, [map, drawnItems]);
+  }, [map, drawnItems, defaultPolygon]);
 
   return null;
 };
